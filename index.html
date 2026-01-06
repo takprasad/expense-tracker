@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expense Tracker</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 16px;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 16px;
+    }
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Daily Expense Tracker</h2>
+
+<p><b>Date:</b> <span id="date"></span></p>
+<p><b>Day:</b> <span id="day"></span></p>
+
+<input id="item" placeholder="Item">
+<input id="amount" type="number" placeholder="Amount">
+<button onclick="addExpense()">Add Expense</button>
+
+<h3>Total: ₹<span id="total">0</span></h3>
+
+<script>
+const API_URL = "PASTE_YOUR_EXEC_URL_HERE";
+
+const today = new Date();
+document.getElementById("date").innerText =
+  today.toLocaleDateString();
+document.getElementById("day").innerText =
+  today.toLocaleDateString("en-US", { weekday: "long" });
+
+function addExpense() {
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "add",
+      date: today.toLocaleDateString(),
+      day: today.toLocaleDateString("en-US", { weekday: "long" }),
+      item: item.value,
+      amount: amount.value
+    })
+  }).then(() => {
+    item.value = "";
+    amount.value = "";
+    getTotal();
+  });
+}
+
+function getTotal() {
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "total" })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("total").innerText = data.total;
+  });
+}
+
+getTotal();
+</script>
+
+</body>
+</html>
